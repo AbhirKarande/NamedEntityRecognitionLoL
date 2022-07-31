@@ -2,9 +2,26 @@ import json
 import sys
 import logging
 import os
+import pandas as pd
+import csv
 
 
 
+# def tsv_to_better_tsv(input_path, output_path):
+#     df = pd.read
+    
+#     # try:
+#     #     f=open(input_path,'r', encoding = "utf8") # input file
+#     #     fp=open(output_path, 'w') # output file
+#     #     for line in f:
+#     #         if line[0:len(line)-1]!='.\tO':
+#     #             word,entity=line.split()
+#     #             fp.write(word+"\t"+entity[:len(entity)-1]+"\n")
+#     #         else:
+#     #             fp.write(line)
+#     # except Exception as e:
+#     #     logging.exception("Unable to process file" + "\n" + "error = " + str(e))
+#     #     return None
 
 def tsv_to_json_format(input_path,output_path,unknown_label):
     try:
@@ -66,4 +83,6 @@ def tsv_to_json_format(input_path,output_path,unknown_label):
         logging.exception("Unable to process file" + "\n" + "error = " + str(e))
         return None
 
-tsv_to_json_format("Train_Tagged_Titles.tsv",'ner_corpus_260.json','abc')
+#tsv_to_json_format("Train_Tagged_Titles.tsv",'ner_corpus_260.json','abc')
+
+tsv_to_better_tsv("Train_Tagged_Titles.tsv","Train_Tagged_Titles_better.tsv")
