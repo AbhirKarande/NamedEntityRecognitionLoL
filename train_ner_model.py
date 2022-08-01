@@ -17,7 +17,7 @@ def main(model=None, new_model_name='new_model', output_dir=None, n_iter=10):
         nlp = spacy.load(model)  # load existing spacy model
         print("Loaded model '%s'" % model)
     else:
-        nlp = spacy.blank('en')  # create blank L   anguage class
+        nlp = spacy.blank('en')  # create blank Lnguage class
         print("Created blank 'en' model")
     if 'ner' not in nlp.pipe_names:
         ner = nlp.create_pipe('ner')
@@ -25,8 +25,9 @@ def main(model=None, new_model_name='new_model', output_dir=None, n_iter=10):
     else:
         ner = nlp.get_pipe('ner')
 
+    # Add new entity labels to entity recognizer
     for i in LABEL:
-        ner.add_label(i)   # Add new entity labels to entity recognizer
+        ner.add_label(i)
 
     if model is None:
         optimizer = nlp.begin_training()

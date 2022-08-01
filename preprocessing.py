@@ -1,16 +1,16 @@
-#read in Train_Tagged_Titiles.tsv and put into pandas dataframe
+# Read in Train_Tagged_Titiles.tsv and put into pandas dataframe
 import pandas as pd
 import csv
 import numpy as np
 
 df = pd.read_csv("Train_Tagged_Titles.tsv", sep="\t", skiprows=1, error_bad_lines=False, quoting=csv.QUOTE_NONE, header=None)
- #made header of each column in df id, title, entity, tag
+# Made header of each column in df id, title, entity, tag
 df.columns = ['id', 'title', 'entity', 'tag']
-#convert df to array of tuples
+# Convert df to array of tuples
 df_array = df.values
 
 print("Collapsing tags...")
-#loop through df_array backwards ignoring the first row
+# Loop through df_array backwards ignoring the first row
 for i in range(len(df_array)-1, 0, -1):
     if pd.isnull(df_array[i][3]):
         df_array[i-1][2] += " "+ df_array[i][2]
@@ -19,8 +19,8 @@ for i in range(len(df_array)-1, 0, -1):
 print("Converting to list of tuples...")
 train_data=[]
 for entity in df_array:
-    location=entity[1].find(entity[2])
-    length=len(entity[2])
+    location = entity[1].find(entity[2])
+    length = len(entity[2])
     train_data.append(
         (entity[1], [(location, location+length,entity[3])])
     )
@@ -44,7 +44,7 @@ for i in range(len(train_data)):
         current_entity_list = []
         current_entity_list.append((this_start_index, this_end_index, this_tag))
         last_string = this_string
-    #handle the last element as a special case
+    # Handle the last element as a special case
     if i == len(train_data)-1:
         pre_doc_bin.append((last_string, current_entity_list))
 
@@ -76,9 +76,6 @@ from spacy.util import minibatch, compounding
 
 # with open('train_data.spacy', 'wb') as f:
 #     pickle.dump(train_data, f)
-
-
-
 
 
 #print df.head 
