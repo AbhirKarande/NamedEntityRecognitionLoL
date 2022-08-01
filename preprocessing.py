@@ -40,10 +40,47 @@ for entity in df_array:
     length=len(entity[2])
     train_data.append(
         
-        (entity[1], {"entities": [(location, location+length,entity[3])]})
+        (entity[1], [(location, location+length,entity[3])])
     )
 
-from __future__ import unicode_literals, print_function
+print(train_data[0][0])
+print(train_data[1][1][0])
+train_data1=[]
+lol = ''
+currentEList = []
+for i in range(1, len(train_data)):
+    asdf = train_data[i][1][0]
+    if train_data[i][0] == lol:
+        currentEList.append((asdf[0], asdf[1], asdf[2]))
+
+    # if train_data[i][0] == train_data[i+1][0]:
+    #     train_data1.append(train_data[i][0], [(train_data[i][1][0][0], train_data[i][1][0][1], train_data[i][1][0][2])])
+    else:
+        train_data1.append((train_data[i-1][0], currentEList))
+        currentEList = []
+print(train_data1[0:50])
+'''
+for each row:
+if string != last create new row
+else add entity to tuple list'''
+
+
+
+import spacy
+from spacy.tokens import DocBin
+nlp = spacy.blank("en")
+db = DocBin()
+for text, annotations in train_data:
+    doc = nlp(text)
+    ents = []
+    for start, end, label in annotations:
+        span = doc.char_span(start, end, label=label)
+        ents.append(span)
+    print(doc.ents)
+    doc.ents = ents
+    db.add(doc)
+db.to_disk("./train.spacy")
+
 import pickle
 
 import random
@@ -51,66 +88,8 @@ from pathlib import Path
 import spacy
 from spacy.util import minibatch, compounding
 
-LABEL = ['Accents', 'Brand', 'Character', 'Character Family', 'Closure', 'Color', 'Country/Region of Manufacture', 'Department', 'Fabric Type', 'Features', 'Handle Drop', 'Handle Style']
-
-def main(model=None, new_model_name='new_model', output_dir=None, n_iter=10):
-    """Setting up the pipeline and entity recognizer, and training the new entity."""
-    if model is not None:
-        nlp = spacy.load(model)  # load existing spacy model
-        print("Loaded model '%s'" % model)
-    else:
-        nlp = spacy.blank('en')  # create blank Language class
-        print("Created blank 'en' model")
-    if 'ner' not in nlp.pipe_names:
-        ner = nlp.create_pipe('ner')
-        nlp.add_pipe(ner)
-    else:
-        ner = nlp.get_pipe('ner')
-
-    for i in LABEL:
-        ner.add_label(i)   # Add new entity labels to entity recognizer
-
-    if model is None:
-        optimizer = nlp.begin_training()
-    else:
-        optimizer = nlp.entity.create_optimizer()
-
-    # Get names of other pipes to disable them during training to train only NER
-    other_pipes = [pipe for pipe in nlp.pipe_names if pipe != 'ner']
-    with nlp.disable_pipes(*other_pipes):  # only train NER
-        for itn in range(n_iter):
-            random.shuffle(train_data)
-            losses = {}
-            batches = minibatch(train_data, size=compounding(4., 32., 1.001))
-            for batch in batches:
-                texts, annotations = zip(*batch)
-                nlp.update(texts, annotations, sgd=optimizer, drop=0.35,
-                           losses=losses)
-            print('Losses', losses)
-
-    # Test the trained model
-    test_text = 'Gianni Infantino is the president of FIFA.'
-    doc = nlp(test_text)
-    print("Entities in '%s'" % test_text)
-    for ent in doc.ents:
-        print(ent.label_, ent.text)
-
-    # Save model 
-    if output_dir is not None:
-        output_dir = Path(output_dir)
-        if not output_dir.exists():
-            output_dir.mkdir()
-        nlp.meta['name'] = new_model_name  # rename model
-        nlp.to_disk(output_dir)
-        print("Saved model to", output_dir)
-
-        # Test the saved model
-        print("Loading from", output_dir)
-        nlp2 = spacy.load(output_dir)
-        doc2 = nlp2(test_text)
-        for ent in doc2.ents:
-            print(ent.label_, ent.text)
-
+# with open('train_data.spacy', 'wb') as f:
+#     pickle.dump(train_data, f)
 
 
 
